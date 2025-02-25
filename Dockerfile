@@ -1,13 +1,12 @@
-FROM golang:1.23.6-alpine3.21
+FROM golang:1.23.6-alpine3.20
 
 WORKDIR /app
 
-COPY . .
+COPY go.mod go.sum ./
 
-RUN go get -d -v ./...
-
-RUN go build -o api .
+RUN go mod download
 
 EXPOSE 8000
 
-CMD ["./api"]
+CMD ["go", "run", "."]
+

@@ -2,7 +2,8 @@ services:
   rest_api:
     image: iusmanof/golang_restapi:v1.0
     container_name: rest_api
-    build: "."
+    working_dir: /app
+    build: .
     ports:
       - "${API_IN_PORT}:${API_OUT_PORT}"
     environment:
@@ -15,7 +16,11 @@ services:
     depends_on:
       pg_container:
         condition: service_healthy
-        
+    networks:
+      - network_api
+    volumes:
+      - .:/app  # Привязка текущей папки с кодом внутрь контейнера
+    command: ["go", "run", "main.go"]
   pg_container:
     container_name: pg_container
     image: postgres:16
@@ -33,6 +38,12 @@ services:
       retries: 3
       start_period: 30s
       timeout: 10s
+    networks:
+      - network_api
 
 volumes:
   pgdata: {}
+
+networks:
+  network_api:
+    driver: bridge

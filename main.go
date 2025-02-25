@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/iusmanof/2025_go_rest_api-PET-/models"
-	"github.com/iusmanof/2025_go_rest_api-PET-/storage"
+	"github.com/2025_REST_API/models"
+	"github.com/2025_REST_API/storage"
     "github.com/gofiber/fiber/v2"
     "gorm.io/gorm"
     "github.com/joho/godotenv"
@@ -117,12 +117,22 @@ func (r *Repository) GetBookByID(context *fiber.Ctx) error {
 	return nil
 }
 
+func (r *Repository) ReCreateBookByID(context *fiber.Ctx) error{
+	id := context.Params("id")
+	fmt.Println("the ID ewfwefwef is", id)
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{"message": "test"},
+	)
+	return nil
+}
+
 func (r *Repository) SetupRoutes(app *fiber.App){
 	api := app.Group("/api")
 	 
 	api.Post("/create_books", r.CreateBooks)
 	api.Delete("/delete_book/:id", r.DeleteBook)
 	api.Get("/get_books/:id", r.GetBookByID)
+	api.Put("get_books/:id", r.ReCreateBookByID)
 	api.Get("/get", r.GetBooks)
 }
 
@@ -157,8 +167,5 @@ func main(){
 
 	app := fiber.New()
 	r.SetupRoutes(app)
-	app.Get("/", func(c *fiber.Ctx) error {
-        return c.SendString("Hello, World!")
-    })
 	app.Listen(":8080")
 }

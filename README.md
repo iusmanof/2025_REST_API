@@ -4,6 +4,11 @@
 
 - [+] docker rmi $(docker images -f "dangling=true" -q)
 - [+] docker images
+- [+] docker volume ls 
+- [+] docker volume rm ...
+- [+] docker ps -a  
+- [+] docekr rm ...
+
 
 - [+] go mod init mod/2025_REST_API
 
@@ -64,7 +69,22 @@ API_OUT_PORT=8080
     depends_on:
       pg_container:
         condition: service_healthy
+        
+- [+] bind mounts
+  docker compose up pg_container -d
+  docker compose up rest_api --builf
+  volumes:
+    - .:/app  # Привязка текущей папки с кодом внутрь контейнера
 
+
+- [] test GET
+- [] test POST
+- [] test PUT
+- [] test DELETE
+- [] test AUTH
+- [] AUTH
+
+ 
 ERRORS:
 
 - [+] ERROR
@@ -73,9 +93,48 @@ ERRORS:
 
 - [+] ERROR
   Error: socket hang up
+%%%%%%%%%%%
   API_IN_PORT=8000
   API_OUT_PORT=8080   Fiber v2.52.6 http://127.0.0.1:8080 (bound on host 0.0.0.0 and port 8080)
+%%%%%%%%%%%
 
-- [+] Conflict. The container name "/pgdb_container" is already in use
+- [+] ERROR
+Conflict. The container name "/pgdb_container" is already in use
+%%%%%%%%%%%
 pg_container:
   container_name: pg_container
+%%%%%%%%%%%
+
+- [] ERROR
+ => CACHED [rest_api 2/5] WORKDIR /
+ => [rest_api 3/5] COPY . .
+ => ERROR [rest_api 4/5] RUN go get -d   
+
+%%%%%%%%%%%
+go.mod:
+module github.com/2025_REST_API
+
+go mod tidy
+
+main.go:
+import (
+  ...
+	"github.com/2025_REST_API/models"
+	"github.com/2025_REST_API/storage"
+  ...
+)
+
+go mod tidy
+%%%%%%%%%%%
+
+- [] ERROR 
+rest_api exited with code 0
+POSTMAN:Error: connect ECONNREFUSED 127.0.0.1:8000
+
+%%%%%%%%%%%
+Rebuild container:
+
+docker-compose down -v
+docker-compose build --no-cache
+docker-compose up
+%%%%%%%%%%%
