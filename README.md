@@ -8,7 +8,9 @@
 - [+] docker volume rm ...
 - [+] docker ps -a  
 - [+] docekr rm ...
-
+- [+] пересобрать с очисткой volume
+        docker-compose down -v  # Удалить контейнеры и volume
+        docker-compose up --build  # Пересобрать образы и запустить
 
 - [+] go mod init mod/2025_REST_API
 
@@ -69,13 +71,19 @@ API_OUT_PORT=8080
     depends_on:
       pg_container:
         condition: service_healthy
-        
+
 - [+] bind mounts
   docker compose up pg_container -d
-  docker compose up rest_api --builf
+  docker compose up rest_api --build
   volumes:
     - .:/app  # Привязка текущей папки с кодом внутрь контейнера
 
+- [] docker run test command
+docker compose exec rest_api go test -v ./...
+
+go mod tidy (на остановленных контейнерах)
+docker exec -it rest_api sh  # или bash
+go test ./handlers
 
 - [] test GET
 - [] test POST
@@ -127,7 +135,7 @@ import (
 go mod tidy
 %%%%%%%%%%%
 
-- [] ERROR 
+- [+] ERROR 
 rest_api exited with code 0
 POSTMAN:Error: connect ECONNREFUSED 127.0.0.1:8000
 
@@ -138,3 +146,11 @@ docker-compose down -v
 docker-compose build --no-cache
 docker-compose up
 %%%%%%%%%%%
+
+- [] test FAIL
+handlers/genre_test.go:18:1: expected declaration, found Host
+FAIL    github.com/2025_REST_API/handlers [setup failed]
+?       github.com/2025_REST_API        [no test files]
+?       github.com/2025_REST_API/models [no test files]
+?       github.com/2025_REST_API/storage        [no test files]
+FAIL
